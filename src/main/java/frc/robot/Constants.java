@@ -15,5 +15,19 @@ package frc.robot;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    
   }
+
+  public static final int ArmMotor = 30;
+  /**
+   * Optional digital input channel for a forward (upper) arm limit switch.
+   * Set to -1 if no forward limit switch is present.
+   */
+  public static final int ArmForwardLimit = -1;
+
+  /**
+   * Optional digital input channel for a reverse (lower) arm limit switch.
+   * Set to -1 if no reverse limit switch is present.
+   */
+  public static final int ArmReverseLimit = -1;
 }

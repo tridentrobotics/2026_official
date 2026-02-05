@@ -6,13 +6,14 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.Supplier;
+//import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -45,12 +46,17 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        // Arms subsystem - controls the robot arm motor
+        public final Arms arms = new Arms();
 
     public RobotContainer() {
+                // ensure subsystems are constructed and default commands registered
         configureBindings();
+        
     }
 
     private void configureBindings() {
+        
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
 
@@ -121,4 +127,11 @@ joystick2.rightTrigger()
                 // Finally idle for the rest of auton
                 drivetrain.applyRequest(() -> idle));
     }
+
+        /**
+         * Accessor for the arms subsystem.
+         */
+        public Arms getArms() {
+                return arms;
+        }
 }

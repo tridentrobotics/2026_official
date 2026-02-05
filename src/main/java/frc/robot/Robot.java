@@ -14,19 +14,23 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
+    private final Intake m_intake;
 
     /* log and replay timestamp and joystick data */
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-            .withTimestampReplay()
-            .withJoystickReplay();
+   
+    // private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay() 
+   //         .withTimestampReplay()                     ////////////////////////Check if need this
+   //         .withJoystickReplay();
 
     public Robot() {
         m_robotContainer = new RobotContainer();
+        
+        m_intake = new Intake();
     }
 
     @Override
     public void robotPeriodic() {
-        m_timeAndJoystickReplay.update();
+   //     m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
     }
 
@@ -45,7 +49,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+System.out.println("Auto");
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
@@ -68,6 +72,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+        
     }
 
     @Override
