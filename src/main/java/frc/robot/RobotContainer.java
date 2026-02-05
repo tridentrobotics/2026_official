@@ -22,12 +22,16 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.commands.RunShooterCommand;
 
 public class RobotContainer {
 
     private final CommandXboxController joystick2 = new CommandXboxController(1);
 
     private final Joystick joystick = new Joystick(0);
+    // Shooter subsystem
+    private final ShooterSubsystem shooter = new ShooterSubsystem();
 
     private double MaxSpeed; // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.4).in(RadiansPerSecond); // 3/4 of a rotation per second max
@@ -96,6 +100,10 @@ public class RobotContainer {
                 .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+        
+        // Shooter controls - Right trigger on Xbox controller runs shooter
+joystick2.rightTrigger()
+    .whileTrue(new RunShooterCommand(shooter));
     }
 
     public Command getAutonomousCommand() {
