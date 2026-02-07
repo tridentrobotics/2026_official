@@ -11,7 +11,10 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import choreo.auto.AutoFactory;
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 //import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +30,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.commands.RunShooterCommand;
 
 public class RobotContainer {
-
+private final AutoFactory autoFactory;
     private final CommandXboxController joystick2 = new CommandXboxController(1);
 
     private final Joystick joystick = new Joystick(0);
@@ -46,15 +49,30 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    // private final SwerveRequest.FieldCentric autoDriveRequest = new SwerveRequest.FieldCentric()
+     //.withDriveRequestType(DriveRequestType.Velocity);
         // Arms subsystem - controls the robot arm motor
         public final Arms arms = new Arms();
 
     public RobotContainer() {
+        autoFactory = new AutoFactory(
+            drivetrain::getPose, // A function that returns the current robot pose
+            drivetrain::resetPose, // A function that resets the current robot pose to the provided Pose2d
+            this::followTrajectory, // The drive subsystem trajectory follower 
+            true, // If alliance flipping should be enabled 
+            drivetrain // The drive subsystem
+        );
                 // ensure subsystems are constructed and default commands registered
         configureBindings();
         
     }
+    private void followTrajectory(SwerveSample sample) {
 
+        ChassisSpeeds speeds = drivetrain.parseTrajectory(sample);
+        drivetrain.setControl(drive.withVelocityX(speeds.vxMetersPerSecond)
+        .withVelocityY(speeds.vyMetersPerSecond)
+        .withRotationalRate(speeds.omegaRadiansPerSecond));
+    }
     private void configureBindings() {
         
         // Note that X is defined as forward according to WPILib convention,
@@ -118,12 +136,14 @@ joystick2.rightTrigger()
         return Commands.sequence(
                 // Reset our field centric heading to match the robot
                 // facing away from our alliance station wall (0 deg).
-                drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+                //drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
                 // Then slowly drive forward (away from us) for 5 seconds.
-                drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-                        .withVelocityY(0)
-                        .withRotationalRate(0))
-                        .withTimeout(5.0),
+              //  drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
+              //          .withVelocityY(0)
+              //          .withRotationalRate(0))
+              //          .withTimeout(5.0),
+              autoFactory.resetOdometry("NewPath"),
+                autoFactory.trajectoryCmd("NewPath"),
                 // Finally idle for the rest of auton
                 drivetrain.applyRequest(() -> idle));
     }
@@ -134,4 +154,6 @@ joystick2.rightTrigger()
         public Arms getArms() {
                 return arms;
         }
+
+        
 }
