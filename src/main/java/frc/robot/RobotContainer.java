@@ -21,18 +21,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Arms;
+import frc.robot.subsystems.Shoot;
+import frc.robot.subsystems.Intake;
 
 
 public class RobotContainer {
 private final AutoFactory autoFactory;
 
-    private final Joystick joystick = new Joystick(0);
-    public final XboxController joystick2 = new XboxController(1);
+    public static Joystick joystick = new Joystick(0);
+    public static XboxController joystick2 = new XboxController(1);
     // Shooter subsystem
     
 
@@ -50,12 +54,17 @@ private final AutoFactory autoFactory;
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     // private final SwerveRequest.FieldCentric autoDriveRequest = new SwerveRequest.FieldCentric()
      //.withDriveRequestType(DriveRequestType.Velocity);
-        // Arms subsystem - controls the robot arm motor
-        public final Arms arms = new Arms();
-        public final Shoot shoot = new Shoot();
+        // Arms/Shooter/Intake subsystems - declared here and constructed in constructor
+        public final Arms arms;
+        public final Shoot shoot;
+        public final Intake intake;
         
     public RobotContainer() {
-        autoFactory = new AutoFactory(
+        // Construct subsystems here to ensure proper initialization order
+        this.arms = new Arms();
+        this.shoot = new Shoot();
+        this.intake = new Intake();
+         autoFactory = new AutoFactory(
             drivetrain::getPose, // A function that returns the current robot pose
             drivetrain::resetPose, // A function that resets the current robot pose to the provided Pose2d
             this::followTrajectory, // The drive subsystem trajectory follower 
@@ -122,7 +131,44 @@ private final AutoFactory autoFactory;
         // Field-centric reset
         new JoystickButton(joystick, 2)
                 .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        
+        //Intake
+        new JoystickButton(joystick2, XboxController.Button.kX.value)
+    .toggleOnTrue(
+        Commands.startEnd(
+            () -> intake.start(),   
+            () -> intake.stop(),    
+            intake
+        )
+    );
+    // Shooter runs based on right trigger value
+        shoot.setDefaultCommand(
+    Commands.run(
+        () -> {
+            double speed = joystick2.getRightTriggerAxis();
+            
+                shoot.setSpeed(speed);
+                shoot.stop();
+        },
+        shoot
+    )
+);
 
+                arms.setDefaultCommand(
+    Commands.run(
+        () -> {
+            double value = joystick2.getLeftX();
+
+            // Optional deadband to prevent drift
+            if (Math.abs(value) < 0.05) {
+                value = 0.0;
+            }
+
+            arms.setSpeed(value);
+        },
+        arms
+    )
+);
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
@@ -153,6 +199,10 @@ private final AutoFactory autoFactory;
         }
         public Shoot getShoot() {
                 return shoot;
+        }
+
+        public Intake getIntake() {
+                return intake;
         }
         
 }

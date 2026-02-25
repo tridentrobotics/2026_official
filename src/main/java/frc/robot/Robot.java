@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private final RobotContainer m_robotContainer;
-    private final Intake m_intake;
+    
 
     /* log and replay timestamp and joystick data */
    
@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
         
         m_robotContainer = new RobotContainer();
         
-        m_intake = new Intake();
+       
     }
 
     @Override
