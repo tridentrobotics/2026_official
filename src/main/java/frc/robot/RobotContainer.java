@@ -37,7 +37,7 @@ private final AutoFactory autoFactory;
 
     public static Joystick joystick = new Joystick(0);
     public static XboxController joystick2 = new XboxController(1);
-    // Shooter subsystem
+    
     
 
     private double MaxSpeed; // kSpeedAt12Volts desired top speed
@@ -45,7 +45,7 @@ private final AutoFactory autoFactory;
                                                                                      // angular velocity
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
+    // Setting up bindings for necessary control of the swerve drive platform 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -60,7 +60,7 @@ private final AutoFactory autoFactory;
         public final Intake intake;
         
     public RobotContainer() {
-        // Construct subsystems here to ensure proper initialization order
+        // Construct subsystems here
         this.arms = new Arms();
         this.shoot = new Shoot();
         this.intake = new Intake();
@@ -190,9 +190,7 @@ private final AutoFactory autoFactory;
                 drivetrain.applyRequest(() -> idle));
     }
 
-        /**
-         * Accessor for the arms subsystem.
-         */
+        
         public Arms getArms() {
              
                 return arms;

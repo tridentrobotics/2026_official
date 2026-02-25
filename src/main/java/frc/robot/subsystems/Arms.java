@@ -14,7 +14,7 @@ public class Arms extends SubsystemBase {
         armMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
-    /** Set percent output for the arm motor (-1.0 .. 1.0) */
+    
     public void setSpeed(double speed) {
         armMotor.set(ControlMode.PercentOutput, speed);
         if (speed > 0) {
