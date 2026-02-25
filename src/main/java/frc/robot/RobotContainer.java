@@ -16,7 +16,7 @@ import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
-//import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,16 +26,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.commands.RunShooterCommand;
+
 
 public class RobotContainer {
 private final AutoFactory autoFactory;
-    private final CommandXboxController joystick2 = new CommandXboxController(1);
 
     private final Joystick joystick = new Joystick(0);
+    public final XboxController joystick2 = new XboxController(1);
     // Shooter subsystem
-    private final ShooterSubsystem shooter = new ShooterSubsystem();
+    
 
     private double MaxSpeed; // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.4).in(RadiansPerSecond); // 3/4 of a rotation per second max
@@ -53,7 +52,8 @@ private final AutoFactory autoFactory;
      //.withDriveRequestType(DriveRequestType.Velocity);
         // Arms subsystem - controls the robot arm motor
         public final Arms arms = new Arms();
-
+        public final Shoot shoot = new Shoot();
+        
     public RobotContainer() {
         autoFactory = new AutoFactory(
             drivetrain::getPose, // A function that returns the current robot pose
@@ -124,10 +124,6 @@ private final AutoFactory autoFactory;
                 .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        
-        // Shooter controls - Right trigger on Xbox controller runs shooter
-joystick2.rightTrigger()
-    .whileTrue(new RunShooterCommand(shooter));
     }
 
     public Command getAutonomousCommand() {
@@ -152,8 +148,11 @@ joystick2.rightTrigger()
          * Accessor for the arms subsystem.
          */
         public Arms getArms() {
+             
                 return arms;
         }
-
+        public Shoot getShoot() {
+                return shoot;
+        }
         
 }

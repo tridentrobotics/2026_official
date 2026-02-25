@@ -17,8 +17,13 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     
   }
-
+  public static class CanIDs {
+  public static final int shootMotor = 40;
+  public static final int shootMotor2 = 41;
   public static final int ArmMotor = 30;
+  public static final int IntakeMotor = 31;
+
+}
   /**
    * Optional digital input channel for a forward (upper) arm limit switch.
    * Set to -1 if no forward limit switch is present.
