@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * Arms subsystem: controls a single TalonFX-based arm motor.
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  */
 public class Arms extends SubsystemBase {
     private final TalonSRX armMotor = new TalonSRX(Constants.ArmMotor);
-    private final CommandXboxController joystick2 = new CommandXboxController(1);
+    private final XboxController joystick2 = new XboxController(1);
 
     // Optional limit switch inputs (may be null if not configured)
     private final DigitalInput forwardLimit;
@@ -29,6 +30,7 @@ public class Arms extends SubsystemBase {
         reverseLimit = (Constants.ArmReverseLimit >= 0) ? new DigitalInput(Constants.ArmReverseLimit) : null;
 
         // Default teleop behavior: drive arm with left X axis of controller on port 1
+        double speed = joystick2.getLeftX();
         setDefaultCommand(new RunCommand(() -> setSpeed(joystick2.getLeftX()), this));
     }
 
@@ -46,7 +48,7 @@ public class Arms extends SubsystemBase {
             applied = 0.0;
         }
 
-        armMotor.set(ControlMode.PercentOutput, applied);
+
 
         
         System.out.println(speed);
