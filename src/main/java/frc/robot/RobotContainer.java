@@ -26,19 +26,22 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Arms;
 import frc.robot.subsystems.Shoot;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pneumatics;
 
 
 public class RobotContainer {
 private final AutoFactory autoFactory;
 
     public static Joystick joystick = new Joystick(0);
-    public static XboxController joystick2 = new XboxController(1);
+    public static CommandXboxController controller = new CommandXboxController(1);
     public final song m_song = new song();
+    private final Pneumatics Pneumatics = new Pneumatics();
     
     
 
@@ -91,13 +94,16 @@ private final AutoFactory autoFactory;
 
 
         // Toggle song on/off with Y button on second controller
-        new JoystickButton(joystick2, XboxController.Button.kY.value).toggleOnTrue(
+        controller.y().toggleOnTrue(
         Commands.startEnd(
             () -> m_song.playsong(),
             () -> m_song.stopsong(),
             m_song
         )
         );
+
+        new JoystickButton(joystick, 17).whileTrue(new InstantCommand(Pneumatics::extendSolenoids, Pneumatics))
+            .onFalse(new InstantCommand(Pneumatics::retractSolenoids, Pneumatics));;
         
 
         drivetrain.setDefaultCommand(
@@ -146,8 +152,8 @@ private final AutoFactory autoFactory;
                 .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         
         //Intake
-        new JoystickButton(joystick2, XboxController.Button.kX.value)
-    .toggleOnTrue(
+        controller.x()
+        .toggleOnTrue(
         Commands.startEnd(
             () -> intake.start(),   
             () -> intake.stop(),    
@@ -158,6 +164,7 @@ private final AutoFactory autoFactory;
         shoot.setDefaultCommand(
     Commands.run(
         () -> {
+
             double speed = joystick.getRawAxis(7);
             if (joystick.getRawButton(18)) {
                 if (speed != -1) {
@@ -179,9 +186,12 @@ private final AutoFactory autoFactory;
                 arms.setDefaultCommand(
     Commands.run(
         () -> {
-            double speed = joystick2.getLeftX();
+
+            double speed = controller.getLeftX();
+
+
             arms.setSpeed(speed);
-           
+
         },
         arms
     )

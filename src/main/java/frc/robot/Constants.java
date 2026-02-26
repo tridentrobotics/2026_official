@@ -22,7 +22,10 @@ public final class Constants {
   public static final int shootMotor2 = 41;
   public static final int ArmMotor = 30;
   public static final int IntakeMotor = 31;
-
-}
   
+    public static class PCM {
+      public static final int rightSolenoidPort = 1;
+      public static final int leftSolenoidPort = 0;
+    }
+}
 }
