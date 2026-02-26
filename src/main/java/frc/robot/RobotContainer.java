@@ -10,7 +10,8 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
+import frc.robot.subsystems.song;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -37,6 +38,7 @@ private final AutoFactory autoFactory;
 
     public static Joystick joystick = new Joystick(0);
     public static XboxController joystick2 = new XboxController(1);
+    public final song m_song = new song();
     
     
 
@@ -86,6 +88,17 @@ private final AutoFactory autoFactory;
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
+
+
+        // Toggle song on/off with Y button on second controller
+        new JoystickButton(joystick2, XboxController.Button.kY.value).toggleOnTrue(
+        Commands.startEnd(
+            () -> m_song.playsong(),
+            () -> m_song.stopsong(),
+            m_song
+        )
+        );
+        
 
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> {
