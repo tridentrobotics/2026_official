@@ -30,7 +30,7 @@ public class song extends SubsystemBase{
 
         public void playsong() {
             var status = m_orchestra.play();
-    
+            System.out.println("Play song");
             if (!status.isOK()) {
                 System.out.println("Failed to play music: " + status.toString());
             }
