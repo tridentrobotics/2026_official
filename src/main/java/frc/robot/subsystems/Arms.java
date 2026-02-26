@@ -16,11 +16,12 @@ public class Arms extends SubsystemBase {
 
     
     public void setSpeed(double speed) {
+        if (speed > .05 || speed < -.05) {
         armMotor.set(ControlMode.PercentOutput, speed);
-        if (speed > 0) {
         System.out.println("Arm speed: " + speed);
         }
     }
+    
 
     public void stop() {
         setSpeed(0.0);

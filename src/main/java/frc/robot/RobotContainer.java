@@ -158,10 +158,19 @@ private final AutoFactory autoFactory;
         shoot.setDefaultCommand(
     Commands.run(
         () -> {
-            double speed = joystick2.getRightTriggerAxis();
-            
+            double speed = joystick.getRawAxis(7);
+            if (joystick.getRawButton(18)) {
+                if (speed != -1) {
                 shoot.setSpeed(speed);
+                System.out.println("Shoot speed: " + speed);
+                } else {
+                    shoot.setSpeed(1.0);
+                    System.out.println("Shoot speed: " + -speed);
+                }
+                
+            } else {
                 shoot.stop();
+            }
         },
         shoot
     )
@@ -170,14 +179,9 @@ private final AutoFactory autoFactory;
                 arms.setDefaultCommand(
     Commands.run(
         () -> {
-            double value = joystick2.getLeftX();
-
-            // Optional deadband to prevent drift
-            if (Math.abs(value) < 0.05) {
-                value = 0.0;
-            }
-
-            arms.setSpeed(value);
+            double speed = joystick2.getLeftX();
+            arms.setSpeed(speed);
+           
         },
         arms
     )
