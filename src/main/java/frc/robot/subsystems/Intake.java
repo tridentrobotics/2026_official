@@ -12,7 +12,7 @@ public class Intake extends SubsystemBase {
     public Intake() {}
 
     public void start() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.2);
+        intakeMotor.set(ControlMode.PercentOutput, 1);
         System.out.println("Intake started");
     }
 

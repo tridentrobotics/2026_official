@@ -133,7 +133,7 @@ public class RobotContainer {
         );
         controller.povRight().toggleOnTrue(
                 Commands.startEnd(
-                        () -> m_song.playSong("pokemon.chrp"),  
+                        () -> m_song.playSong("lavendertown.chrp"),  
                         () -> m_song.stopSong(),
                         m_song
                 )

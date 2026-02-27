@@ -14,6 +14,9 @@ public class song extends SubsystemBase {
 
     private final Orchestra m_orchestra = new Orchestra();
 
+    private String currentSong = null; // Tracks the current song filename
+    private boolean isPlaying = false;
+
     public song() {
         m_orchestra.addInstrument(motor1);
         m_orchestra.addInstrument(motor2);
@@ -21,30 +24,54 @@ public class song extends SubsystemBase {
         m_orchestra.addInstrument(motor4);
     }
 
-    // NEW METHOD: Load and play a song from filename
+    /** 
+     * Plays a song. Stops the currently playing song first if one exists.
+     */
     public void playSong(String filename) {
+        if (isPlaying) {
+            stopSong(); // Stop previous song
+        }
 
         var loadResult = m_orchestra.loadMusic(filename);
-
         if (!loadResult.isOK()) {
             System.out.println("Failed to load music: " + loadResult.toString());
             return;
         }
 
         var playResult = m_orchestra.play();
-
         if (!playResult.isOK()) {
             System.out.println("Failed to play music: " + playResult.toString());
         } else {
+            currentSong = filename;
+            isPlaying = true;
             System.out.println("Playing song: " + filename);
         }
     }
 
+    /**
+     * Stops the current song
+     */
     public void stopSong() {
-        var stopResult = m_orchestra.stop();
+        if (!isPlaying) return; // Nothing to stop
 
+        var stopResult = m_orchestra.stop();
         if (!stopResult.isOK()) {
             System.out.println("Failed to stop music: " + stopResult.toString());
+        } else {
+            System.out.println("Stopped song: " + currentSong);
         }
+
+        isPlaying = false;
+        currentSong = null;
+    }
+
+    /** Returns whether a song is currently playing */
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    /** Returns the filename of the current song, or null if none */
+    public String getCurrentSong() {
+        return currentSong;
     }
 }
