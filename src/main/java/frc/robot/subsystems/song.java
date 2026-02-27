@@ -20,27 +20,58 @@ public class song extends SubsystemBase{
         m_orchestra.addInstrument(motor2);
         m_orchestra.addInstrument(motor3);
         m_orchestra.addInstrument(motor4);
+        
+        var rick = m_orchestra.loadMusic("rick.chrp");
 
-        var status = m_orchestra.loadMusic("output.chrp");
 
-        if (!status.isOK()) {
-            System.out.println("Failed to load music: " + status.toString());
+        if (!rick.isOK()) {
+            System.out.println("Failed to load music: " + rick.toString());
         }
     }
 
+        // Replace simple play with a reusable method call
         public void playsong() {
-            var status = m_orchestra.play();
-            System.out.println("Play song");
-            if (!status.isOK()) {
-                System.out.println("Failed to play music: " + status.toString());
+            // Delegate to the new method so callers can still use playsong()
+            playSong("rick.chrp");
+        }
+    
+        /**
+         * Load and play the given .chrp file from the robot deploy directory.
+         * Examples: "rick.chrp", "song2.chrp", "march.chrp"
+         */
+        public void playSong(String filename) {
+            if (filename == null || filename.isEmpty()) {
+                System.out.println("No filename provided to playSong()");
+                return;
+            }
+
+            // Stop any currently playing music first
+            var stopRes = m_orchestra.stop();
+            if (!stopRes.isOK()) {
+                System.out.println("Failed to stop previous song: " + stopRes.toString());
+            }
+
+            // Load the requested file
+            var loadRes = m_orchestra.loadMusic(filename);
+            if (!loadRes.isOK()) {
+                System.out.println("Failed to load music '" + filename + "': " + loadRes.toString());
+                return;
+            }
+
+            // Play the loaded file
+            var playRes = m_orchestra.play();
+            if (!playRes.isOK()) {
+                System.out.println("Failed to play music '" + filename + "': " + playRes.toString());
+            } else {
+                System.out.println("Playing '" + filename + "'");
             }
         }
     
         public void stopsong() {
-            var status = m_orchestra.stop();
+            var rick = m_orchestra.stop();
     
-            if (!status.isOK()) {
-                System.out.println("Failed to stop music: " + status.toString());
+            if (!rick.isOK()) {
+                System.out.println("Failed to stop music: " + rick.toString());
             }
         }
 }

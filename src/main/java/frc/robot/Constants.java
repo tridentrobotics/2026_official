@@ -21,7 +21,7 @@ public final class Constants {
   public static final int shootMotor = 40;
   public static final int shootMotor2 = 41;
   public static final int ArmMotor = 30;
-  public static final int IntakeMotor = 31;
+  public static final int IntakeMotor = 61;
   
     public static class PCM {
       public static final int rightSolenoidPort = 1;
