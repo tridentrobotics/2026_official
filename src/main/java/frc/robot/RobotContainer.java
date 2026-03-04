@@ -10,12 +10,13 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import frc.robot.subsystems.song;
-
+import static frc.robot.Constants.OperatorConstants.*;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -32,8 +35,9 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
 
 public class RobotContainer {
-
+    
     private final AutoFactory autoFactory;
+    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     public static Joystick joystick = new Joystick(0);
     public static CommandXboxController controller = new CommandXboxController(1);
@@ -61,7 +65,7 @@ public class RobotContainer {
     public final Intake intake;
 
     public RobotContainer() {
-
+        System.out.println(alliance);
         this.arms = new Arms();
         this.shoot = new Shoot();
         this.intake = new Intake();
@@ -74,7 +78,49 @@ public class RobotContainer {
                 drivetrain
         );
 
+        autoFactory.bind("shoot", Commands.run(() -> shoot.setSpeed(1.0), shoot)
+                .withTimeout(2.0)
+                .andThen(Commands.runOnce(() -> shoot.stop(), shoot)));
+
+        configureAutos();
         configureBindings();
+    }
+
+    private Command shootSequence() {
+        return Commands.run(() -> shoot.setSpeed(1.0), shoot)
+                .withTimeout(2.0)
+                .andThen(Commands.runOnce(() -> shoot.stop(), shoot));
+    }
+
+
+    private void configureAutos() {
+        final var idle = new SwerveRequest.Idle();
+
+        autoChooser.setDefaultOption("Blue 1", Commands.sequence(
+                autoFactory.resetOdometry("Blue_Top_1"),
+                autoFactory.trajectoryCmd("Blue_Top_1"),
+                shootSequence(),
+                autoFactory.trajectoryCmd("Blue_Top_2"),
+                drivetrain.applyRequest(() -> idle)
+        ));
+
+        autoChooser.addOption("Blue Mid", Commands.sequence(
+                autoFactory.resetOdometry("Blue_Mid_1"),
+                autoFactory.trajectoryCmd("Blue_Mid_1"),
+                shootSequence(),
+                autoFactory.trajectoryCmd("Blue_Mid_2"),
+                drivetrain.applyRequest(() -> idle)
+        ));
+
+        autoChooser.addOption("Blue Bot", Commands.sequence(
+                autoFactory.resetOdometry("Blue_Bot_1"),
+                autoFactory.trajectoryCmd("Blue_Bot_1"),
+                shootSequence(),
+                autoFactory.trajectoryCmd("Blue_Bot_2"),
+                drivetrain.applyRequest(() -> idle)
+        ));
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private void followTrajectory(SwerveSample sample) {
@@ -87,7 +133,6 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        
         controller.y().toggleOnTrue(
                 Commands.startEnd(
                         () -> m_song.playSong("rick.chrp"),
@@ -216,14 +261,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-
-        final var idle = new SwerveRequest.Idle();
-
-        return Commands.sequence(
-                autoFactory.resetOdometry("NewPath"),
-                autoFactory.trajectoryCmd("NewPath"),
-                drivetrain.applyRequest(() -> idle)
-        );
+        return autoChooser.getSelected();
     }
 
     public Arms getArms() { return arms; }
