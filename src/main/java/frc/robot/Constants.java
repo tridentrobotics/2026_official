@@ -22,6 +22,18 @@ public final class Constants {
   public static final int shootMotor2 = 41;
   public static final int ArmMotor = 12;
   public static final int IntakeMotor = 61;
+  public static final int FRDrive = 7;
+  public static final int FRSteer = 2;
+  public static final int FLDrive = 6;
+  public static final int FLSteer = 3;
+  public static final int BRDrive = 5;
+  public static final int BRSteer = 1;
+  public static final int BLDrive = 4;
+  public static final int BLSteer = 0;
+  public static final int FLencoder  = 10;
+  public static final int FRencoder = 11;
+  public static final int BLencoder = 8;
+  public static final int BRencoder = 9;
   
     public static class PCM {
       public static final int rightSolenoidPort = 1;

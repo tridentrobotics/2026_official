@@ -7,10 +7,18 @@ import static frc.robot.Constants.CanIDs.*;
 
 public class song extends SubsystemBase {
 
-    private final TalonFX motor1 = new TalonFX(shootMotor);
-    private final TalonFX motor2 = new TalonFX(shootMotor2);
-    private final TalonFX motor3 = new TalonFX(ArmMotor);
-    private final TalonFX motor4 = new TalonFX(IntakeMotor);
+    private final TalonFX SM1 = new TalonFX(shootMotor);
+    private final TalonFX SM2 = new TalonFX(shootMotor2);
+    private final TalonFX AM = new TalonFX(ArmMotor);
+    private final TalonFX IM = new TalonFX(IntakeMotor);
+    private final TalonFX FRD = new TalonFX(FRDrive);
+    private final TalonFX FRS = new TalonFX(FRSteer);
+    private final TalonFX FLD = new TalonFX(FLDrive);
+    private final TalonFX FLS = new TalonFX(FLSteer);
+    private final TalonFX BRD = new TalonFX(BRDrive);
+    private final TalonFX BRS = new TalonFX(BRSteer);
+    private final TalonFX BLD = new TalonFX(BLDrive);
+    private final TalonFX BLS = new TalonFX(BLSteer);
 
     private final Orchestra m_orchestra = new Orchestra();
 
@@ -18,10 +26,21 @@ public class song extends SubsystemBase {
     private boolean isPlaying = false;
 
     public song() {
-        m_orchestra.addInstrument(motor1);
-        m_orchestra.addInstrument(motor2);
-        m_orchestra.addInstrument(motor3);
-        m_orchestra.addInstrument(motor4);
+        
+        m_orchestra.addInstrument(BLD);
+        m_orchestra.addInstrument(BRD);
+        m_orchestra.addInstrument(FLD);
+        m_orchestra.addInstrument(FRD);
+
+        m_orchestra.addInstrument(FLS);
+        m_orchestra.addInstrument(FRS);
+        m_orchestra.addInstrument(BLS);
+        m_orchestra.addInstrument(BRS);
+        
+        m_orchestra.addInstrument(SM1);
+        m_orchestra.addInstrument(SM2);
+        m_orchestra.addInstrument(AM);
+        m_orchestra.addInstrument(IM);
     }
 
     /** 
