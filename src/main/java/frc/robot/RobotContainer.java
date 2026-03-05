@@ -38,9 +38,9 @@ public class RobotContainer {
     
     private final AutoFactory autoFactory;
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-
-    public static final AllianceStationID Alliance = DriverStation.getRawAllianceStation();
-
+    public static class alliance {
+    public static final AllianceStationID Alliance = DriverStation.getRawAllianceStation(); //to use import frc.robot.RobotContainer.alliance;
+    }
     public static Joystick joystick = new Joystick(0);
     public static CommandXboxController controller = new CommandXboxController(1);
 
