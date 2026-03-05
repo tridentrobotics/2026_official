@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
-    public static final AllianceStationID alliance = DriverStation.getRawAllianceStation();
     
   }
   public static class CanIDs {
