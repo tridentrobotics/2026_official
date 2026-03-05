@@ -39,6 +39,8 @@ public class RobotContainer {
     private final AutoFactory autoFactory;
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+    public static final AllianceStationID Alliance = DriverStation.getRawAllianceStation();
+
     public static Joystick joystick = new Joystick(0);
     public static CommandXboxController controller = new CommandXboxController(1);
 
@@ -65,7 +67,7 @@ public class RobotContainer {
     public final Intake intake;
 
     public RobotContainer() {
-        System.out.println(alliance);
+        System.out.println(Alliance);
         this.arms = new Arms();
         this.shoot = new Shoot();
         this.intake = new Intake();
