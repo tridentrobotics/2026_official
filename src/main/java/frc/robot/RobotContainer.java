@@ -134,7 +134,7 @@ public class RobotContainer {
     }
 
     private void songbinds() {
-        controller.y().toggleOnTrue(
+        controller.povUpRight().toggleOnTrue(
                 Commands.startEnd(
                         () -> m_song.playSong("rick.chrp"),
                         () -> m_song.stopSong(),
@@ -248,11 +248,11 @@ public class RobotContainer {
         );
 
         // Arms default command
-        arms.setDefaultCommand(
-                Commands.run(() -> {
-                    double speed = controller.getLeftX();
-                    arms.setSpeed(speed);
-                }, arms)
+
+        controller.a().onTrue(
+        Commands.runOnce(() -> {
+                arms.toggleArm();
+        })
         );
 
         drivetrain.registerTelemetry(logger::telemeterize);

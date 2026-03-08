@@ -20,8 +20,8 @@ public final class Constants {
   public static class CanIDs {
   public static final int shootMotor = 40;
   public static final int shootMotor2 = 41;
-  public static final int ArmMotorR = 12;
-  public static final int ArmMotorL = 13;
+  public static final int ArmMotorR = 21;
+  public static final int ArmMotorL = 20;
   public static final int IntakeMotor = 61;
   public static final int FRDrive = 7;
   public static final int FRSteer = 2;
