@@ -1,23 +1,23 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
-    private final TalonSRX intakeMotor = new TalonSRX(Constants.CanIDs.IntakeMotor);
+    private final TalonFX intakeMotor = new TalonFX(Constants.CanIDs.IntakeMotor);
 
     public Intake() {}
 
     public void start() {
-        intakeMotor.set(ControlMode.PercentOutput, 1);
+        intakeMotor.set(1);
         System.out.println("Intake started");
     }
 
     public void stop() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.0);
+        intakeMotor.set(0.0);
         System.out.println("Intake stopped");
     }
 }

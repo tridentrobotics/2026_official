@@ -10,10 +10,9 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import frc.robot.subsystems.song;
-import static frc.robot.Constants.OperatorConstants.*;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -33,6 +32,7 @@ import frc.robot.subsystems.Arms;
 import frc.robot.subsystems.Shoot;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pneumatics;
+
 
 public class RobotContainer {
     
@@ -67,7 +67,7 @@ public class RobotContainer {
     public final Intake intake;
 
     public RobotContainer() {
-        System.out.println(Alliance);
+        System.out.println(alliance.Alliance); // your majesty there is a second bus coming!!!!!!!!!!!!1 yayayayayyayyaayya it sfun to stay at the commmraaaadd yayaya you should sleep on the ground i love touching your balls and then when we will touch more minors i love touchng qall the comrads i lopve touching minors and i will touch more minors and then I wil touch all your minors with an "e"
         this.arms = new Arms();
         this.shoot = new Shoot();
         this.intake = new Intake();
@@ -133,8 +133,7 @@ public class RobotContainer {
                         .withRotationalRate(speeds.omegaRadiansPerSecond));
     }
 
-    private void configureBindings() {
-
+    private void songbinds() {
         controller.y().toggleOnTrue(
                 Commands.startEnd(
                         () -> m_song.playSong("rick.chrp"),
@@ -142,17 +141,10 @@ public class RobotContainer {
                         m_song
                 )
         );
-        controller.a().toggleOnTrue(
-                Commands.startEnd(
-                        () -> m_song.playSong("LoZMain.chrp"),  
-                        () -> m_song.stopSong(),
-                        m_song
-                )
-        );
 
         controller.b().toggleOnTrue(
                 Commands.startEnd(
-                        () -> m_song.playSong("LoZMasterSword.chrp"),  
+                        () -> m_song.playSong("LoZMain.chrp"),  
                         () -> m_song.stopSong(),
                         m_song
                 )
@@ -173,7 +165,7 @@ public class RobotContainer {
         );
         controller.povLeft().toggleOnTrue(
                 Commands.startEnd(
-                        () -> m_song.playSong("sariasong.chrp"),  
+                        () -> m_song.playSong("doom.chrp"),  
                         () -> m_song.stopSong(),
                         m_song
                 )
@@ -185,10 +177,14 @@ public class RobotContainer {
                         m_song
                 )
         );
-        new JoystickButton(joystick, 17)
-                .whileTrue(new InstantCommand(Pneumatics::extendSolenoids, Pneumatics))
-                .onFalse(new InstantCommand(Pneumatics::retractSolenoids, Pneumatics));
 
+    }
+
+    private void configureBindings() {
+        songbinds();
+        controller.a()
+        .onTrue(Commands.runOnce(() -> Pneumatics.toggleSolenoids(), Pneumatics));
+        
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> {
 

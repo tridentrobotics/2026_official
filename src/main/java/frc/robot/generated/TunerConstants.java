@@ -1,18 +1,6 @@
 package frc.robot.generated;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.CanIDs.BLDrive;
-import static frc.robot.Constants.CanIDs.BLSteer;
-import static frc.robot.Constants.CanIDs.BLencoder;
-import static frc.robot.Constants.CanIDs.BRDrive;
-import static frc.robot.Constants.CanIDs.BRSteer;
-import static frc.robot.Constants.CanIDs.BRencoder;
-import static frc.robot.Constants.CanIDs.FLDrive;
-import static frc.robot.Constants.CanIDs.FLSteer;
-import static frc.robot.Constants.CanIDs.FLencoder;
-import static frc.robot.Constants.CanIDs.FRDrive;
-import static frc.robot.Constants.CanIDs.FRSteer;
-import static frc.robot.Constants.CanIDs.FRencoder;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
@@ -25,7 +13,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.*;
-import frc.robot.Constants.*;
+import static frc.robot.Constants.CanIDs.*;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 

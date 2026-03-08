@@ -3,8 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-import edu.wpi.first.hal.AllianceStationID;
-import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -22,7 +20,8 @@ public final class Constants {
   public static class CanIDs {
   public static final int shootMotor = 40;
   public static final int shootMotor2 = 41;
-  public static final int ArmMotor = 12;
+  public static final int ArmMotorR = 12;
+  public static final int ArmMotorL = 13;
   public static final int IntakeMotor = 61;
   public static final int FRDrive = 7;
   public static final int FRSteer = 2;
@@ -38,8 +37,10 @@ public final class Constants {
   public static final int BRencoder = 9;
   
     public static class PCM {
-      public static final int rightSolenoidPort = 1;
-      public static final int leftSolenoidPort = 0;
+      public static final int rightSolenoidPort1 = 0;
+      public static final int rightSolenoidPort2 = 1;
+      public static final int leftSolenoidPort1 = 2;
+      public static final int leftSolenoidPort2 = 3;
     }
 }
 }

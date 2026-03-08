@@ -2,14 +2,16 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.CanIDs.*;
 
 public class song extends SubsystemBase {
-
     private final TalonFX SM1 = new TalonFX(shootMotor);
     private final TalonFX SM2 = new TalonFX(shootMotor2);
-    private final TalonFX AM = new TalonFX(ArmMotor);
+    private final TalonFX AM = new TalonFX(ArmMotorR);
+    private final TalonFX AM2 = new TalonFX(ArmMotorL);
     private final TalonFX IM = new TalonFX(IntakeMotor);
     private final TalonFX FRD = new TalonFX(FRDrive);
     private final TalonFX FRS = new TalonFX(FRSteer);
@@ -40,6 +42,7 @@ public class song extends SubsystemBase {
         m_orchestra.addInstrument(SM1);
         m_orchestra.addInstrument(SM2);
         m_orchestra.addInstrument(AM);
+        m_orchestra.addInstrument(AM2);
         m_orchestra.addInstrument(IM);
     }
 
