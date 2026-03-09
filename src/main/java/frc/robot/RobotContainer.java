@@ -249,10 +249,10 @@ public class RobotContainer {
 
         // Arms default command
 
-        controller.a().onTrue(
-        Commands.runOnce(() -> {
-                arms.toggleArm();
-        })
+        //controller.leftBumper().onTrue(
+        //Commands.runOnce(() -> {
+        //        arms.toggleArm();
+        //})
         );
 
         drivetrain.registerTelemetry(logger::telemeterize);
