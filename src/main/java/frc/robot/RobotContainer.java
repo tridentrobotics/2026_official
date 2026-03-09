@@ -246,15 +246,15 @@ public class RobotContainer {
 
                 }, shoot)
         );
-
+/* 
         // Arms default command
 
-        //controller.leftBumper().onTrue(
-        //Commands.runOnce(() -> {
-        //        arms.toggleArm();
-        //})
+        controller.leftBumper().onTrue(
+        Commands.runOnce(() -> {
+                arms.toggleArm();
+        })
         );
-
+*/
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 

@@ -18,23 +18,33 @@ public final class Constants {
     
   }
   public static class CanIDs {
-  public static final int shootMotor = 40;
-  public static final int shootMotor2 = 41;
-  public static final int ArmMotorR = 21;
-  public static final int ArmMotorL = 20;
-  public static final int IntakeMotor = 61;
-  public static final int FRDrive = 7;
-  public static final int FRSteer = 2;
-  public static final int FLDrive = 6;
-  public static final int FLSteer = 3;
-  public static final int BRDrive = 5;
-  public static final int BRSteer = 1;
-  public static final int BLDrive = 4;
-  public static final int BLSteer = 0;
-  public static final int FLencoder  = 10;
-  public static final int FRencoder = 11;
-  public static final int BLencoder = 8;
-  public static final int BRencoder = 9;
+  
+
+  public static final int FLSteer = 0;
+  public static final int BLSteer = 1;
+  public static final int BRSteer = 2;
+  public static final int FRSteer = 3;
+  public static final int FLDrive = 4;
+  public static final int BLDrive = 5;
+  public static final int FRDrive = 6;
+  public static final int BRDrive = 7;
+  
+  public static final int BRencoder = 11;
+  public static final int BLencoder = 12;
+  public static final int FRencoder = 13;
+  public static final int FLencoder  = 14;
+  
+  public static final int shootMotor = 15; 
+  public static final int shootMotor2 = 16;
+  public static final int IntakeMotor = 17;
+  public static final int ArmMotorR = 18;
+  public static final int ArmMotorL = 19;
+  
+  
+  
+  
+  
+ 
   
     public static class PCM {
       public static final int rightSolenoidPort1 = 0;
