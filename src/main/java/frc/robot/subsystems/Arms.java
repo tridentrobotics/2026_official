@@ -37,7 +37,7 @@ public class Arms extends SubsystemBase {
 
     public Arms() {
 
-        leftMotor.follow(rightMotor);
+        rightMotor.follow(leftMotor);
 
         rightMotor.setNeutralMode(NeutralMode.Brake);
         leftMotor.setNeutralMode(NeutralMode.Brake);
