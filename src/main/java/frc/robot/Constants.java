@@ -37,8 +37,8 @@ public final class Constants {
   public static final int shootMotor = 15; 
   public static final int shootMotor2 = 16;
   public static final int IntakeMotor = 17;
-  public static final int ArmMotorR = 18;
-  public static final int ArmMotorL = 19;
+  public static final int ArmMotorL = 18;
+  public static final int ArmMotorR = 19;
   
   
   
