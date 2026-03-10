@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -11,7 +12,7 @@ import frc.robot.Constants;
 
 public class Arms extends SubsystemBase {
 
-    private enum ArmState { IDLE, MOVING, GRAVITY_HOLDING }
+    private enum ArmState { IDLE, MOVING }
 
     private final TalonSRX rightMotor = new TalonSRX(Constants.CanIDs.ArmMotorR);
     private final TalonSRX leftMotor = new TalonSRX(Constants.CanIDs.ArmMotorL);
@@ -25,7 +26,6 @@ public class Arms extends SubsystemBase {
     private static final double POSITION_TOLERANCE = 0.005;
 
     private double lastLoggedSpeed = Double.NaN;
-    private double lastLoggedVelocity = Double.NaN;
 
     // Gravity assist settings
     private static final boolean USE_GRAVITY_DROP = true;
@@ -37,7 +37,7 @@ public class Arms extends SubsystemBase {
 
     public Arms() {
 
-        rightMotor.follow(leftMotor);
+        leftMotor.follow(rightMotor);
 
         rightMotor.setNeutralMode(NeutralMode.Brake);
         leftMotor.setNeutralMode(NeutralMode.Brake);
@@ -60,6 +60,12 @@ public class Arms extends SubsystemBase {
 
         rightMotor.configOpenloopRamp(0.15);
 
+        // PID gains
+        rightMotor.config_kP(0, 6.0);
+        rightMotor.config_kI(0, 0.0);
+        rightMotor.config_kD(0, 80.0);
+        rightMotor.config_kF(0, 0.0);
+
         System.out.println("Arms initialized. Absolute ticks: " + absoluteTicks);
     }
 
@@ -67,6 +73,10 @@ public class Arms extends SubsystemBase {
     public void toggleArm() {
         extended = !extended;
         state = ArmState.MOVING;
+    }
+
+    private double rotationsToTicks(double rotations) {
+        return rotations * TICKS_PER_ROTATION;
     }
 
     private double getCurrentRotations() {
@@ -80,10 +90,7 @@ public class Arms extends SubsystemBase {
     private void stopMotor() {
         rightMotor.set(ControlMode.PercentOutput, 0);
         state = ArmState.IDLE;
-
-        // Reset logging guards
         lastLoggedSpeed = Double.NaN;
-        lastLoggedVelocity = Double.NaN;
     }
 
     @Override
@@ -96,51 +103,25 @@ public class Arms extends SubsystemBase {
         double error = target - current;
         double velocity = rightMotor.getSelectedSensorVelocity();
 
-        if (state == ArmState.GRAVITY_HOLDING) {
-
-            rightMotor.set(ControlMode.PercentOutput, GRAVITY_DROP_RESISTANCE);
-
-            if (current <= RETRACTED_ROTATIONS + POSITION_TOLERANCE) {
-                stopMotor();
-            }
-
-            return;
-        }
-
-        // Transition to gravity hold when lowering
-        if (USE_GRAVITY_DROP && !extended && current <= GRAVITY_DROP_POINT) {
-
-            System.out.printf(
-                "Entering Gravity Hold | Pos: %.3f | Vel: %.0f%n",
-                current,
-                velocity
-            );
-
-            state = ArmState.GRAVITY_HOLDING;
-            return;
-        }
-
-        // Target reached
+        // Stop if we are close enough to target
         if (Math.abs(error) < POSITION_TOLERANCE) {
             stopMotor();
             return;
         }
 
-        double speed = ARM_SPEED * Math.signum(error);
-
-        if (speed != lastLoggedSpeed) {
-
-            System.out.printf(
-                "Arm Cmd: %.3f | Vel: %.0f | Pos: %.3f%n",
-                speed,
-                velocity,
-                current
-            );
-
-            lastLoggedSpeed = speed;
-            lastLoggedVelocity = velocity;
+        // Feedforward to assist gravity when lowering past the drop point
+        double feedforward = 0.0;
+        if (USE_GRAVITY_DROP && !extended && current <= GRAVITY_DROP_POINT) {
+            feedforward = GRAVITY_DROP_RESISTANCE;
         }
 
-        rightMotor.set(ControlMode.PercentOutput, speed);
+
+        // PID position control with feedforward
+        rightMotor.set(
+            ControlMode.Position,
+            rotationsToTicks(target),
+            DemandType.ArbitraryFeedForward,
+            feedforward
+        );
     }
 }
