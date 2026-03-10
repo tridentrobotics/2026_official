@@ -246,7 +246,7 @@ public class RobotContainer {
 
                 }, shoot)
         );
-/* 
+
         // Arms default command
 
         controller.leftBumper().onTrue(
@@ -254,7 +254,7 @@ public class RobotContainer {
                 arms.toggleArm();
         })
         );
-*/
+
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
