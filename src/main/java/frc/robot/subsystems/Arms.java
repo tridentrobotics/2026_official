@@ -78,10 +78,10 @@ public class Arms extends SubsystemBase {
         return extended ? EXTENDED_ROTATIONS : RETRACTED_ROTATIONS;
     }
 
-    public void setSpeed(double speed) {
+    public void setSpeed(double speed) {    
         rightMotor.set(ControlMode.PercentOutput, speed);
         //leftMotor.set(ControlMode.PercentOutput, speed);
-        if (speed > 0) {
+        if (speed != 0) {
         System.out.println("Arm speed: " + speed);
         }
     }

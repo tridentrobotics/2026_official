@@ -188,7 +188,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> {
 
-                    MaxSpeed = Math.abs(joystick.getRawAxis(5))
+                    MaxSpeed = Math.abs(joystick.getRawAxis(7))
                             * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 
                     return drive
@@ -222,7 +222,15 @@ public class RobotContainer {
         // Intake toggle
         controller.x().toggleOnTrue(
                 Commands.startEnd(
-                        () -> intake.start(),
+                        () -> intake.start(-.3),
+                        () -> intake.stop(),
+                        intake
+                )
+        );
+
+        controller.b().toggleOnTrue(
+                Commands.startEnd(
+                        () -> intake.start(.3),
                         () -> intake.stop(),
                         intake
                 )
@@ -232,14 +240,12 @@ public class RobotContainer {
         shoot.setDefaultCommand(
                 Commands.run(() -> {
 
-                    double speed = joystick.getRawAxis(7);
+                    double speed = joystick.getRawAxis(5);
 
                     if (joystick.getRawButton(18)) {
-                        if (speed != -1) {
+                        if (speed > .05 || speed < .05) {
                             shoot.setSpeed(speed);
-                        } else {
-                            shoot.setSpeed(1.0);
-                        }
+                        } 
                     } else {
                         shoot.stop();
                     }
@@ -248,18 +254,20 @@ public class RobotContainer {
         );
 
         // Arms default command
-
+/* 
         controller.leftBumper().onTrue(
         Commands.runOnce(() -> {
                 arms.toggleArm();
         })
         );
-
+*/
         arms.setDefaultCommand(
                    Commands.run(() -> {
                 double speed = controller.getLeftX();
-                if (speed > 0.1 || speed < -0.1) {
-                        arms.setSpeed(speed/3);
+                if (speed > 0.05 || speed < -0.05) {
+                        arms.setSpeed(speed);
+                } else {
+                        arms.setSpeed(0);
                 }
                    }, arms)
         );

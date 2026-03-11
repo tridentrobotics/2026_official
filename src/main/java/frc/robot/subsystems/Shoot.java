@@ -14,7 +14,7 @@ public class Shoot extends SubsystemBase {
     }
 
     public void setSpeed(double speed) {
-        shootMotor.set(speed);
+        shootMotor.set(-speed);
         shootMotor2.set(speed);
         if (speed > 0) {
         System.out.println("Shoot speed: " + speed);
