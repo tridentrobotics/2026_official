@@ -255,6 +255,16 @@ public class RobotContainer {
         })
         );
 
+        arms.setDefaultCommand(
+                   Commands.run(() -> {
+                double speed = controller.getLeftX();
+                if (speed > 0.1 || speed < -0.1) {
+                        arms.setSpeed(speed/3);
+                }
+                   }, arms)
+        );
+
+
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
