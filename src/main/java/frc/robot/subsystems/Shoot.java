@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import java.lang.Math;
 
 public class Shoot extends SubsystemBase {
 
@@ -13,12 +14,17 @@ public class Shoot extends SubsystemBase {
         
     }
 
-    public void setSpeed(double speed) {
-        shootMotor.set(-speed);
-        shootMotor2.set(speed);
-        if (speed > 0) {
-        System.out.println("Shoot speed: " + speed);
+    public void setSpeed(double shooterSpeed) {
+        double currentVelocity = shootMotor.getVelocity().getValueAsDouble();
+        //double feedSpeed = (Math.abs(currentVelocity) < (90 * shooterSpeed) - 10) ? 0 : shooterSpeed;
+        double feedSpeed = Math.abs(currentVelocity) < 90 ? 0 : 1;
+
+        shootMotor.set(-shooterSpeed);
+        shootMotor2.set(feedSpeed);
+        if (shooterSpeed > 0) {
+        System.out.println("Shoot speed: ," + shooterSpeed + "Feed Speed: ," + feedSpeed + "Velocity: " + currentVelocity);
         }
+
     }
 
     public void stop() {

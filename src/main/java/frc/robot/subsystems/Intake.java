@@ -12,9 +12,14 @@ public class Intake extends SubsystemBase {
     public Intake() {}
 
     public void start(double speed) {
-        intakeMotor.set(speed);
+        
         System.out.println("Intake started");
+        double currentVelocity = intakeMotor.getVelocity().getValueAsDouble();
+        System.out.println("intakespeed: " + currentVelocity);
+        intakeMotor.set(speed);
+        
     }
+
 
     public void stop() {
         intakeMotor.set(0.0);
