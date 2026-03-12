@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.util.ChangeLogger;
 
 public class Arms extends SubsystemBase {
 
@@ -24,9 +25,8 @@ public class Arms extends SubsystemBase {
     private static final double ARM_SPEED = 0.325;
     private static final double POSITION_TOLERANCE = 0.005;
 
-    private double lastLoggedSpeed = Double.NaN;
-    private double lastLoggedVelocity = Double.NaN;
-    private double lastLoggedPosition = Double.NaN;
+    // Reusable change-logger
+    private final ChangeLogger logger = new ChangeLogger("Arms");
 
     // Gravity assist settings
     private static final boolean USE_GRAVITY_DROP = true;
@@ -61,7 +61,7 @@ public class Arms extends SubsystemBase {
 
         rightMotor.configOpenloopRamp(0.15);
 
-        System.out.println("Arms initialized. Absolute ticks: " + absoluteTicks);
+    logger.logOnce("Init", String.format("Arms initialized. Absolute ticks: %.0f", absoluteTicks));
     }
 
     /** Toggle arm between extended and retracted */
@@ -82,7 +82,7 @@ public class Arms extends SubsystemBase {
         rightMotor.set(ControlMode.PercentOutput, speed);
         //leftMotor.set(ControlMode.PercentOutput, speed);
         if (speed != 0) {
-        System.out.println("Arm speed: " + speed);
+            logger.logOnce("Speed", String.format("Arm speed: %.3f", speed));
         }
     }
 
@@ -91,9 +91,7 @@ public class Arms extends SubsystemBase {
         rightMotor.set(ControlMode.PercentOutput, 0);
         state = ArmState.IDLE;
 
-        // Reset logging guards
-        lastLoggedSpeed = Double.NaN;
-        lastLoggedVelocity = Double.NaN;
+    // Nothing to reset; ChangeLogger handles change detection
     }
 
     @Override
@@ -119,13 +117,7 @@ public class Arms extends SubsystemBase {
 
         // Transition to gravity hold when lowering
         if (USE_GRAVITY_DROP && !extended && currentPos <= GRAVITY_DROP_POINT) {
-
-            System.out.printf(
-                "Entering Gravity Hold | Pos: %.3f | Vel: %.0f%n",
-                currentPos,
-                velocity
-            );
-
+            logger.logOnce("GravityHold", String.format("Entering Gravity Hold | Pos: %.3f | Vel: %.0f", currentPos, velocity));
             state = ArmState.GRAVITY_HOLDING;
             return;
         }
@@ -138,18 +130,7 @@ public class Arms extends SubsystemBase {
 
         double speed = ARM_SPEED * Math.signum(error);
 
-        if (currentPos != lastLoggedPosition) {
-
-            System.out.printf(
-                "Arm Cmd: %.3f | Vel: %.0f | Pos: %.3f%n",
-                speed,
-                velocity,
-                currentPos
-            );
-            lastLoggedSpeed = speed;
-            lastLoggedVelocity = velocity;
-            lastLoggedPosition = currentPos;
-        }
+        logger.logOnce("ArmStatus", String.format("Arm Cmd: %.3f | Vel: %.0f | Pos: %.3f", speed, velocity, currentPos));
         rightMotor.set(ControlMode.PercentOutput, speed);
 
     }

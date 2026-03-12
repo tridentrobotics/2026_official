@@ -5,10 +5,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.ChangeLogger;
 
 public class Intake extends SubsystemBase {
 
     private final TalonFX intakeMotor = new TalonFX(Constants.CanIDs.IntakeMotor);
+
+    // Reusable change-logger
+    private final ChangeLogger logger = new ChangeLogger("Intake");
 
     /** The speed the operator requested (set by start/stop). */
     private double commandedSpeed = 0.0;
@@ -48,7 +52,7 @@ public class Intake extends SubsystemBase {
     public Intake() {}
 
     public void start(double speed) {
-        System.out.println("Intake started");
+    logger.logOnce("IntakeStarted", "Intake started");
         commandedSpeed = speed;
         running = true;
         jamState = JamState.NORMAL;
@@ -59,7 +63,7 @@ public class Intake extends SubsystemBase {
 
         intakeMotor.set(speed);
         double currentVelocity = intakeMotor.getVelocity().getValueAsDouble();
-        System.out.println("intakespeed: " + currentVelocity);
+    logger.logOnce("Velocity", String.format("intakespeed: %.2f", currentVelocity));
     }
 
     public void stop() {
@@ -68,7 +72,7 @@ public class Intake extends SubsystemBase {
         commandedSpeed = 0.0;
         jamState = JamState.NORMAL;
         jamTimer.stop();
-        System.out.println("Intake stopped");
+    logger.logOnce("IntakeStopped", "Intake stopped");
     }
 
     @Override
@@ -85,7 +89,7 @@ public class Intake extends SubsystemBase {
                     if (Math.abs(currentVelocity) <= STALL_VELOCITY_THRESHOLD) {
                         // Motor is stuck – start multi-step unjam sequence:
                         // stop 1s -> reverse 1s -> stop 1s -> resume forward
-                        System.out.println("Intake jam detected! Starting unjam sequence: stop -> reverse -> stop -> forward.");
+                            logger.logOnce("JamDetected", "Intake jam detected! Starting unjam sequence: stop -> reverse -> stop -> forward.");
 
                         // Stop immediately
                         intakeMotor.set(0.0);
@@ -104,7 +108,7 @@ public class Intake extends SubsystemBase {
                     if (reverseDirection == 0.0) reverseDirection = -1.0;
                     intakeMotor.set(reverseDirection * UNJAM_REVERSE_SPEED);
 
-                    System.out.println("Unjam: reversing for " + REVERSE_DURATION + "s.");
+                    logger.logOnce("JamAction", String.format("Unjam: reversing for %.2fs.", REVERSE_DURATION));
 
                     jamTimer.reset();
                     jamTimer.start();
@@ -116,7 +120,7 @@ public class Intake extends SubsystemBase {
                 if (jamTimer.hasElapsed(REVERSE_DURATION)) {
                     // Stop again before resuming forward
                     intakeMotor.set(0.0);
-                    System.out.println("Unjam: stopping briefly before resuming forward.");
+                    logger.logOnce("JamAction", "Unjam: stopping briefly before resuming forward.");
 
                     jamTimer.reset();
                     jamTimer.start();
@@ -127,7 +131,7 @@ public class Intake extends SubsystemBase {
             case STOP2:
                 if (jamTimer.hasElapsed(STOP_DURATION)) {
                     // Sequence complete — resume the originally commanded speed
-                    System.out.println("Unjam complete, resuming intake.");
+                    logger.logOnce("JamAction", "Unjam complete, resuming intake.");
                     intakeMotor.set(commandedSpeed);
 
                     jamTimer.reset();
