@@ -17,7 +17,7 @@ public class Shoot extends SubsystemBase {
     public void setSpeed(double shooterSpeed) {
         double currentVelocity = shootMotor.getVelocity().getValueAsDouble();
         //double feedSpeed = (Math.abs(currentVelocity) < (90 * shooterSpeed) - 10) ? 0 : shooterSpeed;
-        double feedSpeed = Math.abs(currentVelocity) < 90 ? 0 : 1;
+        double feedSpeed = Math.abs(currentVelocity) < 90 ? 0 : .1;
 
         shootMotor.set(-shooterSpeed);
         shootMotor2.set(feedSpeed);
