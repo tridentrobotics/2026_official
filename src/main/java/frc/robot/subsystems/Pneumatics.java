@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import frc.robot.util.ChangeLogger;
 
 public class Pneumatics extends SubsystemBase {
 
@@ -25,10 +26,12 @@ public class Pneumatics extends SubsystemBase {
         leftSolenoid  = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, PCM.leftSolenoidPort1,  PCM.leftSolenoidPort2);
     }
 
+    private final ChangeLogger logger = new ChangeLogger("Pneumatics");
+
     /** Toggles solenoids between extended and retracted. */
     public void toggleSolenoids() {
         if (!isExtended && !compressor.getPressureSwitchValue()) {
-            System.err.println("Pressure too low, cannot extend solenoids");
+            logger.logOnce("PressureError", "Pressure too low, cannot extend solenoids");
             return;
         }
 
@@ -38,7 +41,7 @@ public class Pneumatics extends SubsystemBase {
         rightSolenoid.set(position);
         leftSolenoid.set(position);
 
-        System.out.println("Solenoids " + (isExtended ? "Extended" : "Retracted"));
+        logger.logOnce("Solenoids", "Solenoids " + (isExtended ? "Extended" : "Retracted"));
     }
 
     public boolean isExtended() {
