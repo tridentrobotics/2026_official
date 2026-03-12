@@ -17,7 +17,11 @@ public class Intake extends SubsystemBase {
     private boolean running = false;
 
     /** Jam-detection / unjam state machine. */
-    private enum JamState { NORMAL, UNJAMMING }
+    // NORMAL: regular operation
+    // STOP1: stop for a short period after detecting a jam
+    // REVERSE: spin in the reverse direction to clear the jam
+    // STOP2: stop again briefly before resuming forward
+    private enum JamState { NORMAL, STOP1, REVERSE, STOP2 }
     private JamState jamState = JamState.NORMAL;
 
     /** Timer used for both the startup grace period and the unjam duration. */
@@ -29,11 +33,14 @@ public class Intake extends SubsystemBase {
      */
     private static final double JAM_GRACE_PERIOD = 0.25;
 
-    /** How long (seconds) to reverse the motor when a jam is detected. */
-    private static final double UNJAM_DURATION = .1;
+    /** How long (seconds) to stop between stages. */
+    private static final double STOP_DURATION = 1.0;
 
-    /** Speed used when reversing to clear a jam. */
-    private static final double UNJAM_SPEED = 0.5;
+    /** How long (seconds) to reverse the motor when a jam is detected. */
+    private static final double REVERSE_DURATION = .2;
+
+    /** Speed used when reversing to clear a jam (fractional, 0..1). */
+    private static final double UNJAM_REVERSE_SPEED = 0.1;
 
     /** Velocity threshold (rot/s) – at or below this the motor is considered stalled. */
     private static final double STALL_VELOCITY_THRESHOLD = 0.5;
@@ -74,22 +81,52 @@ public class Intake extends SubsystemBase {
             case NORMAL:
                 // Only check for a jam after the grace period has elapsed
                 if (jamTimer.hasElapsed(JAM_GRACE_PERIOD)) {
+
                     if (Math.abs(currentVelocity) <= STALL_VELOCITY_THRESHOLD) {
-                        // Motor is stuck – reverse to unjam
-                        System.out.println("Intake jam detected! Reversing to unjam.");
-                        double reverseDirection = -Math.signum(commandedSpeed);
-                        intakeMotor.set(reverseDirection * UNJAM_SPEED);
+                        // Motor is stuck – start multi-step unjam sequence:
+                        // stop 1s -> reverse 1s -> stop 1s -> resume forward
+                        System.out.println("Intake jam detected! Starting unjam sequence: stop -> reverse -> stop -> forward.");
+
+                        // Stop immediately
+                        intakeMotor.set(0.0);
 
                         jamTimer.reset();
                         jamTimer.start();
-                        jamState = JamState.UNJAMMING;
+                        jamState = JamState.STOP1;
                     }
                 }
                 break;
+            case STOP1:
+                if (jamTimer.hasElapsed(STOP_DURATION)) {
+                    // Begin reversing to try to clear the jam
+                    double reverseDirection = -Math.signum(commandedSpeed);
+                    // If commandedSpeed was 0, default to -1 (reverse) to attempt clearing
+                    if (reverseDirection == 0.0) reverseDirection = -1.0;
+                    intakeMotor.set(reverseDirection * UNJAM_REVERSE_SPEED);
 
-            case UNJAMMING:
-                if (jamTimer.hasElapsed(UNJAM_DURATION)) {
-                    // Unjam period over – go back to the original commanded speed
+                    System.out.println("Unjam: reversing for " + REVERSE_DURATION + "s.");
+
+                    jamTimer.reset();
+                    jamTimer.start();
+                    jamState = JamState.REVERSE;
+                }
+                break;
+
+            case REVERSE:
+                if (jamTimer.hasElapsed(REVERSE_DURATION)) {
+                    // Stop again before resuming forward
+                    intakeMotor.set(0.0);
+                    System.out.println("Unjam: stopping briefly before resuming forward.");
+
+                    jamTimer.reset();
+                    jamTimer.start();
+                    jamState = JamState.STOP2;
+                }
+                break;
+
+            case STOP2:
+                if (jamTimer.hasElapsed(STOP_DURATION)) {
+                    // Sequence complete — resume the originally commanded speed
                     System.out.println("Unjam complete, resuming intake.");
                     intakeMotor.set(commandedSpeed);
 
@@ -97,7 +134,7 @@ public class Intake extends SubsystemBase {
                     jamTimer.start();
                     jamState = JamState.NORMAL;
                 }
-                break;
+        break;
         }
     }
 }
