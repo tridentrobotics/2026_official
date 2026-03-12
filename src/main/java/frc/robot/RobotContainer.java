@@ -191,10 +191,10 @@ public class RobotContainer {
                     MaxSpeed = Math.abs(joystick.getRawAxis(7))
                             * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 
-                    return drive
-                            .withVelocityX(joystick.getY() * MaxSpeed)
-                            .withVelocityY(joystick.getX() * MaxSpeed)
-                            .withRotationalRate(joystick.getZ() * MaxAngularRate);
+                    return drive             //keyword
+                            .withVelocityX(-joystick.getY() * MaxSpeed)
+                            .withVelocityY(-joystick.getX() * MaxSpeed)
+                            .withRotationalRate(-joystick.getZ() * MaxAngularRate);
                 }));
 
         final var idle = new SwerveRequest.Idle();
