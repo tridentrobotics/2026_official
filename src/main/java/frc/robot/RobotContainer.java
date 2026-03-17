@@ -96,34 +96,43 @@ public class RobotContainer {
 
 
     private void configureAutos() {
-        final var idle = new SwerveRequest.Idle();
+    // Blue Top
+     var blueTop = autoFactory.newRoutine("Blue 1");                    //here
+    var blueTop1 = blueTop.trajectory("Blue_1_pt1");       
+    var blueTop2 = blueTop.trajectory("Blue_1_pt2");
+    blueTop.active().onTrue(blueTop1.cmd());
+    blueTop1.atTime("shoot").onTrue(shootSequence());
+    blueTop1.done().onTrue(blueTop2.cmd());
+    blueTop2.atTime("shoot").onTrue(shootSequence());
+    blueTop2.atTime("intake_on").onTrue(
+        Commands.startEnd(
+            () -> intake.start(-.3),
+            () -> intake.stop(),
+            intake
+        )
+    );
+    autoChooser.setDefaultOption("Blue 1", blueTop.cmd());
 
-        autoChooser.setDefaultOption("Blue 1", Commands.sequence(
-                autoFactory.resetOdometry("Blue_Top_1"),
-                autoFactory.trajectoryCmd("Blue_Top_1"),
-                shootSequence(),
-                autoFactory.trajectoryCmd("Blue_Top_2"),
-                drivetrain.applyRequest(() -> idle)
-        ));
+    // Blue Mid
+    var blueMid = autoFactory.newRoutine("Blue Mid");
+    var blueMid1 = blueMid.trajectory("Blue_Mid_1");
+    var blueMid2 = blueMid.trajectory("Blue_Mid_2");
+    blueMid.active().onTrue(blueMid1.cmd());
+    blueMid1.atTime("shoot").onTrue(shootSequence());
+    blueMid1.done().onTrue(blueMid2.cmd());
+    autoChooser.addOption("Blue Mid", blueMid.cmd());
 
-        autoChooser.addOption("Blue Mid", Commands.sequence(
-                autoFactory.resetOdometry("Blue_Mid_1"),
-                autoFactory.trajectoryCmd("Blue_Mid_1"),
-                shootSequence(),
-                autoFactory.trajectoryCmd("Blue_Mid_2"),
-                drivetrain.applyRequest(() -> idle)
-        ));
+    // Blue Bot
+    var blueBot = autoFactory.newRoutine("Blue Bot");
+    var blueBot1 = blueBot.trajectory("Blue_Bot_1");
+    var blueBot2 = blueBot.trajectory("Blue_Bot_2");
+    blueBot.active().onTrue(blueBot1.cmd());
+    blueBot1.atTime("shoot").onTrue(shootSequence());
+    blueBot1.done().onTrue(blueBot2.cmd());
+    autoChooser.addOption("Blue Bot", blueBot.cmd());
 
-        autoChooser.addOption("Blue Bot", Commands.sequence(
-                autoFactory.resetOdometry("Blue_Bot_1"),
-                autoFactory.trajectoryCmd("Blue_Bot_1"),
-                shootSequence(),
-                autoFactory.trajectoryCmd("Blue_Bot_2"),
-                drivetrain.applyRequest(() -> idle)
-        ));
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-    }
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+}
 
     private void followTrajectory(SwerveSample sample) {
         ChassisSpeeds speeds = drivetrain.parseTrajectory(sample);
