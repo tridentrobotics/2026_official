@@ -67,7 +67,7 @@ public class RobotContainer {
     public final Intake intake;
 
     public RobotContainer() {
-        System.out.println(alliance.Alliance); // your majesty there is a second bus coming!!!!!!!!!!!!1 yayayayayyayyaayya it sfun to stay at the commmraaaadd yayaya you should sleep on the ground i love touching your balls and then when we will touch more minors i love touchng qall the comrads i lopve touching minors and i will touch more minors and then I wil touch all your minors with an "e"
+        System.out.println(alliance.Alliance);
         this.arms = new Arms();
         this.shoot = new Shoot();
         this.intake = new Intake();
