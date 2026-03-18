@@ -275,16 +275,8 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
     shoot.setDefaultCommand(
     Commands.run(() -> {
-        if (!joystick.getRawButton(18)) {
-            double speed = driverController.getRightTriggerAxis();
-            if (speed > 0.05) {
-                shoot.setSpeed(speed);
-            } else {
-                shoot.stop();
-            }
-        } else {
-            double speed = joystick.getRawAxis(5);
-            if (joystick.getRawButton(18)) {
+            double speed = controller.getRightTriggerAxis();
+            if (controller.getRightTriggerAxis()) {
                 if (speed > 0.05 || speed < -0.05) {
                     shoot.setSpeed(speed);
                 }
