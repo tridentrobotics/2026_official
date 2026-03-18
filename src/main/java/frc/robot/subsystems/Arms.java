@@ -12,29 +12,27 @@ import frc.robot.util.ChangeLogger;
 
 public class Arms extends SubsystemBase {
 
-    private enum ArmState { IDLE, MOVING, GRAVITY_HOLDING }
+    // private enum ArmState { IDLE, MOVING, GRAVITY_HOLDING }
 
     private final TalonSRX rightMotor = new TalonSRX(Constants.CanIDs.ArmMotorR);
     private final TalonSRX leftMotor = new TalonSRX(Constants.CanIDs.ArmMotorL);
 
-    private static final double TICKS_PER_ROTATION = 4096.0;
+    // private static final double TICKS_PER_ROTATION = 4096.0;
 
-    private static final double RETRACTED_ROTATIONS = 0.0;
-    private static final double EXTENDED_ROTATIONS = 0.35;
+    // private static final double RETRACTED_ROTATIONS = 0.0;
+    // private static final double EXTENDED_ROTATIONS = 0.35;
 
-    private static final double ARM_SPEED = 0.325;
-    private static final double POSITION_TOLERANCE = 0.005;
+    // private static final double ARM_SPEED = 0.325;
+    // private static final double POSITION_TOLERANCE = 0.005;
 
-    // Reusable change-logger
     private final ChangeLogger logger = new ChangeLogger("Arms");
 
-    // Gravity assist settings
-    private static final boolean USE_GRAVITY_DROP = true;
-    private static final double GRAVITY_DROP_POINT = 0.10;
-    private static final double GRAVITY_DROP_RESISTANCE = -0.05;
+    // private static final boolean USE_GRAVITY_DROP = true;
+    // private static final double GRAVITY_DROP_POINT = 0.10;
+    // private static final double GRAVITY_DROP_RESISTANCE = -0.05;
 
-    private boolean extended = false;
-    private ArmState state = ArmState.IDLE;
+    // private boolean extended = false;
+    // private ArmState state = ArmState.IDLE;
 
     public Arms() {
 
@@ -61,77 +59,70 @@ public class Arms extends SubsystemBase {
 
         rightMotor.configOpenloopRamp(0.15);
 
-    logger.logOnce("Init", String.format("Arms initialized. Absolute ticks: %.0f", absoluteTicks));
+        logger.logOnce("Init", String.format("Arms initialized. Absolute ticks: %.0f", absoluteTicks));
     }
 
-    /** Toggle arm between extended and retracted */
-    public void toggleArm() {
-        extended = !extended;
-        state = ArmState.MOVING;
-    }
+    // /** Toggle arm between extended and retracted */
+    // public void toggleArm() {
+    //     extended = !extended;
+    //     state = ArmState.MOVING;
+    // }
 
-    private double getCurrentRotations() {
-        return rightMotor.getSelectedSensorPosition() / TICKS_PER_ROTATION;
-    }
+    // private double getCurrentRotations() {
+    //     return rightMotor.getSelectedSensorPosition() / TICKS_PER_ROTATION;
+    // }
 
-    private double getTargetRotations() {
-        return extended ? EXTENDED_ROTATIONS : RETRACTED_ROTATIONS;
-    }
+    // private double getTargetRotations() {
+    //     return extended ? EXTENDED_ROTATIONS : RETRACTED_ROTATIONS;
+    // }
 
-    public void setSpeed(double speed) {    
+    public void setSpeed(double speed) {
         rightMotor.set(ControlMode.PercentOutput, speed);
-        //leftMotor.set(ControlMode.PercentOutput, speed);
+        // leftMotor.set(ControlMode.PercentOutput, speed);
         if (speed != 0) {
             logger.logOnce("Speed", String.format("Arm speed: %.3f", speed));
         }
     }
 
-
-    private void stopMotor() {
-        rightMotor.set(ControlMode.PercentOutput, 0);
-        state = ArmState.IDLE;
-
-    // Nothing to reset; ChangeLogger handles change detection
-    }
+    // private void stopMotor() {
+    //     rightMotor.set(ControlMode.PercentOutput, 0);
+    //     state = ArmState.IDLE;
+    // }
 
     @Override
     public void periodic() {
 
-        if (state == ArmState.IDLE) return;
+        // if (state == ArmState.IDLE) return;
 
-        double currentPos = getCurrentRotations();
-        double target = getTargetRotations();
-        double error = target - currentPos;
-        double velocity = rightMotor.getSelectedSensorVelocity();
+        // double currentPos = getCurrentRotations();
+        // double target = getTargetRotations();
+        // double error = target - currentPos;
+        // double velocity = rightMotor.getSelectedSensorVelocity();
 
-        if (state == ArmState.GRAVITY_HOLDING) {
+        // if (state == ArmState.GRAVITY_HOLDING) {
+        //     rightMotor.set(ControlMode.PercentOutput, GRAVITY_DROP_RESISTANCE);
+        //     if (currentPos <= RETRACTED_ROTATIONS + POSITION_TOLERANCE) {
+        //         stopMotor();
+        //     }
+        //     return;
+        // }
 
-            rightMotor.set(ControlMode.PercentOutput, GRAVITY_DROP_RESISTANCE);
+        // // Transition to gravity hold when lowering
+        // if (USE_GRAVITY_DROP && !extended && currentPos <= GRAVITY_DROP_POINT) {
+        //     logger.logOnce("GravityHold", String.format("Entering Gravity Hold | Pos: %.3f | Vel: %.0f", currentPos, velocity));
+        //     state = ArmState.GRAVITY_HOLDING;
+        //     return;
+        // }
 
-            if (currentPos <= RETRACTED_ROTATIONS + POSITION_TOLERANCE) {
-                stopMotor();
-            }
+        // // Target reached
+        // if (Math.abs(error) < POSITION_TOLERANCE) {
+        //     stopMotor();
+        //     return;
+        // }
 
-            return;
-        }
-
-        // Transition to gravity hold when lowering
-        if (USE_GRAVITY_DROP && !extended && currentPos <= GRAVITY_DROP_POINT) {
-            logger.logOnce("GravityHold", String.format("Entering Gravity Hold | Pos: %.3f | Vel: %.0f", currentPos, velocity));
-            state = ArmState.GRAVITY_HOLDING;
-            return;
-        }
-
-        // Target reached
-        if (Math.abs(error) < POSITION_TOLERANCE) {
-            stopMotor();
-            return;
-        }
-
-        double speed = ARM_SPEED * Math.signum(error);
-
-        logger.logOnce("ArmStatus", String.format("Arm Cmd: %.3f | Vel: %.0f | Pos: %.3f", speed, velocity, currentPos));
-        rightMotor.set(ControlMode.PercentOutput, speed);
+        // double speed = ARM_SPEED * Math.signum(error);
+        // logger.logOnce("ArmStatus", String.format("Arm Cmd: %.3f | Vel: %.0f | Pos: %.3f", speed, velocity, currentPos));
+        // rightMotor.set(ControlMode.PercentOutput, speed);
 
     }
 }
