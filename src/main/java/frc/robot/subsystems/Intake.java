@@ -38,10 +38,10 @@ public class Intake extends SubsystemBase {
     private static final double JAM_GRACE_PERIOD = 0.25;
 
     /** How long (seconds) to stop between stages. */
-    private static final double STOP_DURATION = 1.0;
+    private static final double STOP_DURATION = .5;
 
     /** How long (seconds) to reverse the motor when a jam is detected. */
-    private static final double REVERSE_DURATION = .2;
+    private static final double REVERSE_DURATION = .1;
 
     /** Speed used when reversing to clear a jam (fractional, 0..1). */
     private static final double UNJAM_REVERSE_SPEED = 0.1;
