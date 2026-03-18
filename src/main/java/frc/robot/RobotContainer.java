@@ -249,7 +249,7 @@ public class RobotContainer {
         shoot.setDefaultCommand(
                 Commands.run(() -> {
 
-                    double speed = 1;
+                    double speed = joystick.getRawAxis(5);
 
                     if (joystick.getRawButton(18)) {
                         if (speed > .05 || speed < .05) {
