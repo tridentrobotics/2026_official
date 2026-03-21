@@ -51,7 +51,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
     private final Pneumatics Pneumatics = new Pneumatics();
 
     private double MaxSpeed;
-    private double MaxAngularRate = RotationsPerSecond.of(0.4).in(RadiansPerSecond);
+    private double MaxAngularRate = RotationsPerSecond.of(0.9).in(RadiansPerSecond);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -154,13 +154,13 @@ public static CommandXboxController controller = new CommandXboxController(1);
                 )
         );
 
-        controller.b().toggleOnTrue(
-                Commands.startEnd(
-                        () -> m_song.playSong("LoZMain.chrp"),  
-                        () -> m_song.stopSong(),
-                        m_song
-                )
-        );
+     //   controller.b().toggleOnTrue(
+    //            Commands.startEnd(
+    //                    () -> m_song.playSong("LoZMain.chrp"),  
+   //                     () -> m_song.stopSong(),
+    //                    m_song
+    //            )
+    //    );
         controller.povDown().toggleOnTrue(
                 Commands.startEnd(
                         () -> m_song.playSong("LoZdungeonmusic.chrp"),  
@@ -275,26 +275,18 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
     shoot.setDefaultCommand(
     Commands.run(() -> {
-        if (!joystick.getRawButton(18)) {
-            double speed = driverController.getRightTriggerAxis();
-            if (speed > 0.05) {
-                shoot.setSpeed(speed);
-            } else {
-                shoot.stop();
-            }
+        double right = controller.getRightTriggerAxis();
+        double left = controller.getLeftTriggerAxis();
+
+        if (right > 0.005 && left < 0.005) {
+            shoot.setSpeed(right);
+        } else if (left > 0.005 && right < 0.005) {
+            shoot.setSpeed(-left); 
         } else {
-            double speed = joystick.getRawAxis(5);
-            if (joystick.getRawButton(18)) {
-                if (speed > 0.05 || speed < -0.05) {
-                    shoot.setSpeed(speed);
-                }
-            } else {
-                shoot.stop();
-            }
+            shoot.stop();
         }
     }, shoot)
 );
-
     arms.setDefaultCommand(
             Commands.run(() -> {
                 double speed = controller.getLeftX();
