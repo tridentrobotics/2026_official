@@ -40,6 +40,7 @@ public final class Constants {
   public static final int ArmMotorL = 18;
   public static final int ArmMotorR = 19;
   
+  public static final int Pigeon = 20;
   
   
   
