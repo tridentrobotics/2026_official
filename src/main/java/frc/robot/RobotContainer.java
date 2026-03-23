@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+                   //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -60,7 +60,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
             .withRotationalDeadband(MaxAngularRate * 0.1)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+                 //  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -257,7 +257,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
     // Everything below is unchanged regardless of driver input mode:
 
-    controller.x().toggleOnTrue(
+    controller.x().whileTrue(
             Commands.startEnd(
                     () -> intake.start(-.3),
                     () -> intake.stop(),
@@ -265,11 +265,21 @@ public static CommandXboxController controller = new CommandXboxController(1);
             )
     );
 
-    controller.b().toggleOnTrue(
+
+    controller.b().whileTrue(
             Commands.startEnd(
                     () -> intake.start(.3),
                     () -> intake.stop(),
                     intake
+            )
+    );
+
+    // While left bumper is held, run the feeder only
+    controller.leftBumper().whileTrue(
+            Commands.startEnd(
+                    () -> shoot.feed(),
+                    () -> shoot.stopFeed(),
+                    shoot
             )
     );
 
@@ -278,11 +288,11 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
         double right = controller.getRightTriggerAxis();
         double left = controller.getLeftTriggerAxis();
-
+        double spud = 1;
         if (right > 0.005 && left < 0.005) {
-            shoot.setSpeed(right);
+            shoot.setSpeed(spud);
         } else if (left > 0.005 && right < 0.005) {
-            shoot.setSpeed(-left); 
+            shoot.setSpeed(-spud); 
         } else {
             shoot.stop();
 
@@ -291,7 +301,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
 );
     arms.setDefaultCommand(
             Commands.run(() -> {
-                double speed = controller.getLeftX();
+                double speed = controller.getLeftY();
                 if (speed > 0.05 || speed < -0.05) {
                     arms.setSpeed(speed);
                 } else {
