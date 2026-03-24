@@ -10,11 +10,13 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import frc.robot.subsystems.song;
+import pabeles.concurrency.IntOperatorTask.Max;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +24,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-                   //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -51,7 +54,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
     private final Pneumatics Pneumatics = new Pneumatics();
 
     private double MaxSpeed;
-    private double MaxAngularRate = RotationsPerSecond.of(0.9).in(RadiansPerSecond);
+    private double MaxAngularRate;
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -64,6 +67,14 @@ public static CommandXboxController controller = new CommandXboxController(1);
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+        // Heading-hold controller: when the rotation joystick is released (near zero),
+        // hold the robot heading by applying a small corrective rotational rate.
+        private final PIDController m_headingHoldController = new PIDController(20, 0.0, 0.0);
+        private boolean m_headingHoldActive = false;
+        private double m_targetHeadingRadians = 0.0;
+        // joystick Z deadband for considering 'released'
+        private static final double kHeadingDeadband = 0.05;
 
     public final Arms arms;
     public final Shoot shoot;
@@ -196,7 +207,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
     songbinds();
     controller.a()
         .onTrue(Commands.runOnce(() -> Pneumatics.toggleSolenoids(), Pneumatics));
-
+        
     if (Constants.OperatorConstants.useController) {
         // --- Xbox controller on port 0 ---
         drivetrain.setDefaultCommand(
@@ -234,12 +245,40 @@ public static CommandXboxController controller = new CommandXboxController(1);
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() -> {
                 MaxSpeed = Math.abs(joystick.getRawAxis(7))
-                        * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+                * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+                MaxAngularRate = RotationsPerSecond.of(joystick.getRawAxis(5)).in(RadiansPerSecond);
+                if (joystick.getRawAxis(5) == -1) {
+                        MaxAngularRate =RotationsPerSecond.of(joystick.getRawAxis(5)).in(RadiansPerSecond);;
+                }
 
-                return drive
-                        .withVelocityX(-joystick.getY() * MaxSpeed)
-                        .withVelocityY(-joystick.getX() * MaxSpeed)
-                        .withRotationalRate(-joystick.getZ() * MaxAngularRate);
+                                // Rotation input from Z axis. If it's near zero, engage heading-hold
+                                // which counters drift by steering toward the last target heading.
+                                double joystickZ = joystick.getZ();
+                                double rotationalRate;
+                                if (Math.abs(joystickZ) > kHeadingDeadband) {
+                                        // Driver is commanding rotation: pass-through and disable hold
+                                        m_headingHoldActive = false;
+                                        rotationalRate = -joystickZ * MaxAngularRate;
+                                } else {
+                                        // Driver released rotation stick: enable/maintain heading hold
+                                        double currentHeading = drivetrain.getPose().getRotation().getRadians();
+                                        if (!m_headingHoldActive) {
+                                                // capture target heading when we first enter the deadband
+                                                m_targetHeadingRadians = currentHeading;
+                                                m_headingHoldActive = true;
+                                                m_headingHoldController.reset();
+                                        }
+
+                                        // PID controller computes an angular-rate correction (rad/s)
+                                        double correction = m_headingHoldController.calculate(currentHeading, m_targetHeadingRadians);
+                                        // clamp to allowed max angular rate
+                                        rotationalRate = Math.max(-MaxAngularRate, Math.min(MaxAngularRate, correction));
+                                }
+
+                                return drive
+                                                .withVelocityX(-joystick.getY() * MaxSpeed)
+                                                .withVelocityY(-joystick.getX() * MaxSpeed)
+                                                .withRotationalRate(rotationalRate);
             }));
 
         final var idle = new SwerveRequest.Idle();
@@ -280,6 +319,43 @@ public static CommandXboxController controller = new CommandXboxController(1);
                     () -> shoot.feed(),
                     () -> shoot.stopFeed(),
                     shoot
+            )
+    );
+
+    // Directional nudge buttons for operator controller:
+    // Y -> forward, Right Bumper -> right, Start -> back, Back -> left
+    // while held, apply a fixed field-centric velocity request
+    final double nudgeSpeed = 0.6 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+
+    new JoystickButton(joystick, 5).whileTrue(
+            drivetrain.applyRequest(() ->
+                    drive.withVelocityX(nudgeSpeed)
+                            .withVelocityY(0)
+                            .withRotationalRate(0)
+            )
+    );
+
+    new JoystickButton(joystick, 6).whileTrue(
+            drivetrain.applyRequest(() ->
+                    drive.withVelocityX(0)
+                            .withVelocityY(nudgeSpeed)
+                            .withRotationalRate(0)
+            )
+    );
+
+    new JoystickButton(joystick, 7).whileTrue(
+            drivetrain.applyRequest(() ->
+                    drive.withVelocityX(-nudgeSpeed)
+                            .withVelocityY(0)
+                            .withRotationalRate(0)
+            )
+    );
+
+    new JoystickButton(joystick, 8).whileTrue(
+            drivetrain.applyRequest(() ->
+                    drive.withVelocityX(0)
+                            .withVelocityY(-nudgeSpeed)
+                            .withRotationalRate(0)
             )
     );
 
