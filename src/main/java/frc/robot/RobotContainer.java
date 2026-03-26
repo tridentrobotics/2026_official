@@ -22,6 +22,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -73,6 +74,8 @@ public static CommandXboxController controller = new CommandXboxController(1);
     public final Intake intake;
 
     public RobotContainer() {
+        
+
         System.out.println(alliance.Alliance);
         this.arms = new Arms();
         this.shoot = new Shoot();
@@ -89,7 +92,6 @@ public static CommandXboxController controller = new CommandXboxController(1);
         autoFactory.bind("shoot", Commands.run(() -> shoot.setSpeed(1.0), shoot)
                 .withTimeout(2.0)
                 .andThen(Commands.runOnce(() -> shoot.stop(), shoot)));
-
         configureAutos();
         configureBindings();
     }
@@ -99,13 +101,13 @@ public static CommandXboxController controller = new CommandXboxController(1);
                 // finally stop both.
                 return Commands.sequence(
                                 // Spin shooter only for 2 seconds to allow spin-up
-                                Commands.run(() -> shoot.setSpeed(0), shoot).withTimeout(2.0),
+                                Commands.run(() -> shoot.setSpeed(.5), shoot).withTimeout(2.0),
 
                                 // After spin-up, keep shooter at speed and start feeder at 0.2 for 6 seconds
                                 Commands.run(() -> {
-                                        shoot.setSpeed(0);
+                                        shoot.setSpeed(.53);
                                         shoot.feed();
-                                }, shoot).withTimeout(6.0),
+                                }, shoot).withTimeout(12.0),
 
                                 // Ensure both shooter and feeder are stopped when sequence finishes
                                 Commands.runOnce(() -> {
@@ -135,15 +137,16 @@ public static CommandXboxController controller = new CommandXboxController(1);
     autoChooser.setDefaultOption("Blue 1", blueTop.cmd());
 
     // Blue Mid
+    
     var blueMid = autoFactory.newRoutine("Blue Mid");
     var blueMid1 = blueMid.trajectory("BlueMid");
     blueMid.active().onTrue(blueMid1.cmd()); 
-    blueMid1.atTime("shoot").onTrue(shootSequence());
+    blueMid1.atTime("Shoot").onTrue(shootSequence());
     autoChooser.addOption("Blue Mid", blueMid.cmd());
 
-    // Blue Mid
+    // red Mid
     var redMid = autoFactory.newRoutine("Red Mid");
-    var redMid1 = blueMid.trajectory("RedMid");
+    var redMid1 = redMid.trajectory("RedMid");
     redMid.active().onTrue(redMid1.cmd()); 
     redMid1.atTime("shoot").onTrue(shootSequence());
     autoChooser.addOption("Red Mid", redMid.cmd());

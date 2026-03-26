@@ -50,8 +50,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        
+       
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         new frc.robot.util.ChangeLogger("Robot").logOnce("Mode", "Auto");
+        // Seed field-centric at start of autonomous (same behavior as joystick button 2)
+        CommandScheduler.getInstance().schedule(
+                m_robotContainer.drivetrain.runOnce(m_robotContainer.drivetrain::seedFieldCentric)
+        );
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
