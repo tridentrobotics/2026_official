@@ -136,10 +136,17 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
     // Blue Mid
     var blueMid = autoFactory.newRoutine("Blue Mid");
-    var blueMid1 = blueMid.trajectory("Mid");
+    var blueMid1 = blueMid.trajectory("BlueMid");
     blueMid.active().onTrue(blueMid1.cmd()); 
     blueMid1.atTime("shoot").onTrue(shootSequence());
     autoChooser.addOption("Blue Mid", blueMid.cmd());
+
+    // Blue Mid
+    var redMid = autoFactory.newRoutine("Red Mid");
+    var redMid1 = blueMid.trajectory("RedMid");
+    redMid.active().onTrue(redMid1.cmd()); 
+    redMid1.atTime("shoot").onTrue(shootSequence());
+    autoChooser.addOption("Red Mid", redMid.cmd());
 
     // Blue Bot
     var blueBot = autoFactory.newRoutine("Blue Bot");
