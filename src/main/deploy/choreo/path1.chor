@@ -61,12 +61,12 @@
     "val":0.4191
    },
    "side":{
-    "exp":"15.5 in",
-    "val":0.3937
+    "exp":"16.5 in",
+    "val":0.4191
    },
    "back":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"16.5 in",
+    "val":0.4191
    }
   },
   "differentialTrackWidth":{

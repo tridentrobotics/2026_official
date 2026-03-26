@@ -99,11 +99,11 @@ public static CommandXboxController controller = new CommandXboxController(1);
                 // finally stop both.
                 return Commands.sequence(
                                 // Spin shooter only for 2 seconds to allow spin-up
-                                Commands.run(() -> shoot.setSpeed(1.0), shoot).withTimeout(2.0),
+                                Commands.run(() -> shoot.setSpeed(0), shoot).withTimeout(2.0),
 
                                 // After spin-up, keep shooter at speed and start feeder at 0.2 for 6 seconds
                                 Commands.run(() -> {
-                                        shoot.setSpeed(1.0);
+                                        shoot.setSpeed(0);
                                         shoot.feed();
                                 }, shoot).withTimeout(6.0),
 
@@ -321,7 +321,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
     shoot.setDefaultCommand(
     Commands.run(() -> {
         double right = controller.getRightTriggerAxis();
-        double spud = .8;
+        double spud = .53;
         double left = controller.getLeftTriggerAxis();
         if (right > 0.005 && left < 0.005) {
             shoot.setSpeed(spud);

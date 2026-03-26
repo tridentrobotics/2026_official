@@ -37,7 +37,7 @@ public class Shoot extends SubsystemBase {
     }
 
     public void feed() {
-        shootMotor2.set(0.075);
+        shootMotor2.set(0.2);
     }
 
     /**
