@@ -17,6 +17,8 @@ public class Arms extends SubsystemBase {
     private final TalonSRX rightMotor = new TalonSRX(Constants.CanIDs.ArmMotorR);
     private final TalonSRX leftMotor = new TalonSRX(Constants.CanIDs.ArmMotorL);
 
+    
+
     // private static final double TICKS_PER_ROTATION = 4096.0;
 
     // private static final double RETRACTED_ROTATIONS = 0.0;

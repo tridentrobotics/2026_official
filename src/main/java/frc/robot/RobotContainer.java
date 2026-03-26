@@ -95,9 +95,24 @@ public static CommandXboxController controller = new CommandXboxController(1);
     }
 
     private Command shootSequence() {
-        return Commands.run(() -> shoot.setSpeed(1.0), shoot)
-                .withTimeout(2.0)
-                .andThen(Commands.runOnce(() -> shoot.stop(), shoot));
+                // Spin up shooter for 2s, then enable feeder at 0.2 and keep shooter + feeder on for 6s,
+                // finally stop both.
+                return Commands.sequence(
+                                // Spin shooter only for 2 seconds to allow spin-up
+                                Commands.run(() -> shoot.setSpeed(1.0), shoot).withTimeout(2.0),
+
+                                // After spin-up, keep shooter at speed and start feeder at 0.2 for 6 seconds
+                                Commands.run(() -> {
+                                        shoot.setSpeed(1.0);
+                                        shoot.feed();
+                                }, shoot).withTimeout(6.0),
+
+                                // Ensure both shooter and feeder are stopped when sequence finishes
+                                Commands.runOnce(() -> {
+                                        shoot.stopFeed();
+                                        shoot.stop();
+                                }, shoot)
+                );
     }
 
 
@@ -121,17 +136,15 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
     // Blue Mid
     var blueMid = autoFactory.newRoutine("Blue Mid");
-    var blueMid1 = blueMid.trajectory("Blue_Mid_1");
-    var blueMid2 = blueMid.trajectory("Blue_Mid_2");
-    blueMid.active().onTrue(blueMid1.cmd());
+    var blueMid1 = blueMid.trajectory("Mid");
+    blueMid.active().onTrue(blueMid1.cmd()); 
     blueMid1.atTime("shoot").onTrue(shootSequence());
-    blueMid1.done().onTrue(blueMid2.cmd());
     autoChooser.addOption("Blue Mid", blueMid.cmd());
 
     // Blue Bot
     var blueBot = autoFactory.newRoutine("Blue Bot");
-    var blueBot1 = blueBot.trajectory("Blue_Bot_1");
-    var blueBot2 = blueBot.trajectory("Blue_Bot_2");
+    var blueBot1 = blueBot.trajectory("Bot1");
+    var blueBot2 = blueBot.trajectory("Bot2");
     blueBot.active().onTrue(blueBot1.cmd());
     blueBot1.atTime("shoot").onTrue(shootSequence());
     blueBot1.done().onTrue(blueBot2.cmd());

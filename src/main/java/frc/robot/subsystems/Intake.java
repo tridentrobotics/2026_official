@@ -10,7 +10,6 @@ import frc.robot.util.ChangeLogger;
 public class Intake extends SubsystemBase {
 
     private final TalonFX intakeMotor = new TalonFX(Constants.CanIDs.IntakeMotor);
-
     // Reusable change-logger
     private final ChangeLogger logger = new ChangeLogger("Intake");
 
@@ -50,6 +49,8 @@ public class Intake extends SubsystemBase {
     private static final double STALL_VELOCITY_THRESHOLD = 0.5;
 
     public Intake() {}
+
+    
 
     public void start(double speed) {
     logger.logOnce("IntakeStarted", "Intake started");
