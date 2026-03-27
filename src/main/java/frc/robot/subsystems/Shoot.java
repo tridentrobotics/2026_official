@@ -46,7 +46,9 @@ public class Shoot extends SubsystemBase {
     public void stopFeed() {
         shootMotor2.set(0.0);
     }
-
+    public void feedRev() {
+        shootMotor2.set(-.2);
+    }
     public void stop() {
         setSpeed(0.0);
     }

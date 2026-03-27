@@ -107,7 +107,7 @@ public static CommandXboxController controller = new CommandXboxController(1);
                                 Commands.run(() -> {
                                         shoot.setSpeed(.53);
                                         shoot.feed();
-                                }, shoot).withTimeout(12.0),
+                                }, shoot).withTimeout(12.0), 
 
                                 // Ensure both shooter and feeder are stopped when sequence finishes
                                 Commands.runOnce(() -> {
@@ -119,45 +119,45 @@ public static CommandXboxController controller = new CommandXboxController(1);
 
 
     private void configureAutos() {
-    // Blue Top
-     var blueTop = autoFactory.newRoutine("Blue 1");                    //here
-    var blueTop1 = blueTop.trajectory("Blue_1_pt1");       
-    var blueTop2 = blueTop.trajectory("Blue_1_pt2");
-    blueTop.active().onTrue(blueTop1.cmd());
-    blueTop1.atTime("shoot").onTrue(shootSequence());
-    blueTop1.done().onTrue(blueTop2.cmd());
-    blueTop2.atTime("shoot").onTrue(shootSequence());
-    blueTop2.atTime("intake_on").onTrue(
-        Commands.startEnd(
-            () -> intake.start(-.3),
-            () -> intake.stop(),
-            intake
-        )
-    );
-    autoChooser.setDefaultOption("Blue 1", blueTop.cmd());
 
+
+
+    // Blue Top
+    var blueTop = autoFactory.newRoutine("Blue Top");                   
+    var blueTop1 = blueTop.trajectory("BlueTop");       
+    blueTop.active().onTrue(blueTop1.cmd());
+        autoChooser.setDefaultOption("Blue Top", blueTop.cmd());
+   
+    //Red Top
+        var redTop = autoFactory.newRoutine("Red Top");
+        var redTop1 = redTop.trajectory("RedTop");
+        redTop.active().onTrue(redTop1.cmd());
+        autoChooser.setDefaultOption("Red Top", redTop.cmd());
+         
     // Blue Mid
-    
     var blueMid = autoFactory.newRoutine("Blue Mid");
     var blueMid1 = blueMid.trajectory("BlueMid");
     blueMid.active().onTrue(blueMid1.cmd()); 
     blueMid1.atTime("Shoot").onTrue(shootSequence());
-    autoChooser.addOption("Blue Mid", blueMid.cmd());
-
-    // red Mid
+        autoChooser.setDefaultOption("Blue Mid", blueMid.cmd()); 
+   
+    // Red Mid
     var redMid = autoFactory.newRoutine("Red Mid");
     var redMid1 = redMid.trajectory("RedMid");
     redMid.active().onTrue(redMid1.cmd()); 
-    redMid1.atTime("shoot").onTrue(shootSequence());
+    redMid1.atTime("Shoot").onTrue(shootSequence());
     autoChooser.addOption("Red Mid", redMid.cmd());
+
+    // Red Bot
+    var redBot = autoFactory.newRoutine("Red Bot");
+    var redBot1 = redBot.trajectory("RedBot");
+    redBot.active().onTrue(redBot1.cmd());
+    autoChooser.addOption("Red Bot", redBot.cmd());
 
     // Blue Bot
     var blueBot = autoFactory.newRoutine("Blue Bot");
-    var blueBot1 = blueBot.trajectory("Bot1");
-    var blueBot2 = blueBot.trajectory("Bot2");
+    var blueBot1 = blueBot.trajectory("BlueBot");
     blueBot.active().onTrue(blueBot1.cmd());
-    blueBot1.atTime("shoot").onTrue(shootSequence());
-    blueBot1.done().onTrue(blueBot2.cmd());
     autoChooser.addOption("Blue Bot", blueBot.cmd());
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -329,7 +329,9 @@ public static CommandXboxController controller = new CommandXboxController(1);
         if (right > 0.005 && left < 0.005) {
             shoot.setSpeed(spud);
         } else if (left > 0.005 && right < 0.005) {
-            shoot.setSpeed(-spud); 
+            shoot.setSpeed(-spud);
+            shoot.feedRev();
+            
         } else {
             shoot.stop();
 
