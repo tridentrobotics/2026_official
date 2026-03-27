@@ -40,9 +40,6 @@ public class Shoot extends SubsystemBase {
         shootMotor2.set(0.2);
     }
 
-    /**
-     * Stop the feed motor only (leaves shooter wheel state unchanged).
-     */
     public void stopFeed() {
         shootMotor2.set(0.0);
     }
