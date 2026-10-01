@@ -332,7 +332,6 @@ public static CommandXboxController controller = new CommandXboxController(1);
         } else if (left > 0.005 && right < 0.005) {
             shoot.setSpeed(-spud);
             shoot.feedRev();
-            
         } else {
             shoot.stop();
 
